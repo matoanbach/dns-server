@@ -194,4 +194,4 @@ A forwarding DNS server, aka a DNS forwarder, is a DNS server is configured to p
 
 However, this feature is still unstable and under testing. In order for it to work properly, you gotta have another DNS server for which our forwarding DNS server sends queries.
 
-<img src="https://github.com/matoanbach/dns-server/pics/dns_resolver.jpeg"/>
+<img src="https://github.com/matoanbach/dns-server/blob/main/pics/dns_resolver.jpeg"/>
