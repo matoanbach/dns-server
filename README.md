@@ -151,31 +151,31 @@ The pointer takes the form of a two octet sequence:
 The first thing we need to determine if we have a compressed content by finding 0x0c hex and then mask out the first two bits of the current byte with 0x3F (0011 1111). After that, we add 8 more bits making room for the OFFSET byte by left-shifting by 8 bits and using OR gate to add the OFFSET bytes.
 
 ```cpp
-        while (*current != 0)
-        {
-            // Check for compression
-            if ((*current & 0xC0) == 0xC0)
-            {
-                /*
-                (*current & 0x3F) << 8: This masks out the first two bits of the current byte
-                                        (which are not part of the offset) and shifts the remaining
-                                        6 bits to the left by 8 bits to make room for the next byte.
+while (*current != 0)
+{
+    // Check for compression
+    if ((*current & 0xC0) == 0xC0)
+    {
+    /*
+    (*current & 0x3F) << 8: This masks out the first two bits of the current byte
+                            (which are not part of the offset) and shifts the remaining
+                            6 bits to the left by 8 bits to make room for the next byte.
 
-                static_cast<uint8_t>(*(current + 1)): This adds the next byte to the offset.
-                                        The static_cast<uint8_t> ensures you're working with a
-                                        byte-sized integer.
-                 */
-                uint16_t offset = ((*current & 0x3F) << 8) | static_cast<uint8_t>(*(current + 1));
-                current = buffer + offset; // Jump to the offset in the buffer
-            }
-            else
-            {
-                uint8_t len = *current++;
-                question.qname.push_back('.');
-                while (len-- > 0)
-                {
-                    question.qname.push_back(*current++);
-                }
-            }
+    static_cast<uint8_t>(*(current + 1)): This adds the next byte to the offset.
+                            The static_cast<uint8_t> ensures you're working with a
+                            byte-sized integer.
+    */
+    uint16_t offset = ((*current & 0x3F) << 8) | static_cast<uint8_t>(*(current + 1));
+    current = buffer + offset; // Jump to the offset in the buffer
+    }
+    else
+    {
+        uint8_t len = *current++;
+        question.qname.push_back('.');
+        while (len-- > 0)
+        {
+            question.qname.push_back(*current++);
         }
+    }
+}
 ```
