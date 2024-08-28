@@ -22,8 +22,46 @@ For more details on DNS packet format, take a look at [Wikipedia](https://en.wik
 |      Recursion Desired (RD)       |  1 bit  |                               Sender sets this to 1 if the server should recursively resolve this query, 0 otherwise                               |
 |     Recursion Available (RA)      |  1 bit  |                                           Server sets this to 1 to indicate that recursion is available                                            |
 |           Reserved (Z)            | 3 bits  |                                        Used by DNSSEC queries. At inception, it was reserved for future use                                        |
-|       Response Code (RCODE)       | 4 bits  |                                                 Response code indicating the status of the reponse                                                 |
+|       Response Code (RCODE)       | 4 bits  |                                                Response code indicating the status of the response                                                 |
 |     Question Count (QDCOUNT)      | 16 bits |                                                    Number of questions in the Question section                                                     |
 |   Answer Record Count (ANCOUNT)   | 16 bits |                                                      Number of records in the Answer section                                                       |
 | Authority Record Count (NSCOUNT)  | 16 bits |                                                     Number of records in the Authority section                                                     |
 | Additional Record Count (ARCOUNT) | 16 bits |                                                    Number of records in the Additional section                                                     |
+
+For the sake of the project simplicity, NSCOUNT and ARCOUNT are ignored.
+
+### Question section structure
+
+The question section contains a list of questions (usually just 1) that the sender wants to as the receiver. This section is included in both query and reply packets.
+
+|         Field         |  Size   |                                   Description                                   |
+| :-------------------: | :-----: | :-----------------------------------------------------------------------------: |
+| Question Name (QNAME) | 16 bits | a domain name represented as a sequence of labels (more details provided below) |
+| Question Type (QTYPE) | 16 bits |                             the type of the queries                             |
+|    Question Class     | 16 bits |                            the class of the queries                             |
+
+where:
+
+- labels are like: www.example.com is represented as 3 label including "www", "example" and "com".
+- QTYPE:
+
+| TYPE  | value |                 meaning                  |
+| :---: | :---: | :--------------------------------------: |
+|   A   |   1   |              a host address              |
+|  NS   |   2   |       an authoritative name server       |
+|  MD   |   3   |           a small destination            |
+|  MF   |   4   |            a small forwarder             |
+| CNAME |   5   |     the canonical name for an alias      |
+|  SOA  |   6   |  marks the start of a zone of authority  |
+|  MB   |   7   |   a mailbox domain name (EXPERIMENTAL)   |
+|  MG   |   8   |    a mail group member (EXPERIMENTAL)    |
+|  MR   |   9   | a mail rename domain name (EXPERIMENTAL) |
+| NULL  |  10   |         a null RR (EXPERIMENTAL)         |
+|  WKS  |  11   |     a well known service description     |
+|  PTR  |  12   |          a domain name pointer           |
+| HINFO |  13   |             host information             |
+| MINFO |  14   |     mailbox or mail list information     |
+|  MX   |  15   |              mail exchange               |
+|  TXT  |  16   |               text strings               |
+
+For the sake of the project simplicity, it only covers type A and type CNAME.
