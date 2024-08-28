@@ -150,18 +150,18 @@ int main(int argc, char **argv)
         }
         buffer[bytesRead] = '\0';
 
-        cout << "request: ";
-        hex_form(buffer, bytesRead);
-        cout << endl;
+        // cout << "request: ";
+        // hex_form(buffer, bytesRead);
+        // cout << endl;
         // Print the package received
         DNSMessage request = deserialize_message(buffer, bytesRead, false);
         // hex_form(buffer, bytesRead);
+        printDNSMessage(request, true, false);
 
         // make a response
         char response[2048];
         size_t totalSize;
         DNSMessage message = construct_message(request);
-        // printDNSMessage(message);
 
         // test
         if (use_resolve)
@@ -173,9 +173,9 @@ int main(int argc, char **argv)
         {
             // serialize message into the response
             serialize_message(message, response, totalSize, true);
-            cout << "response: ";
-            hex_form(response, totalSize);
-            cout << endl;
+            // cout << "response: ";
+            // hex_form(response, totalSize);
+            // cout << endl;
             // Send response
             if (sendto(udpSocket, response, sizeof(response), 0, reinterpret_cast<struct sockaddr *>(&clientAddress), sizeof(clientAddress)) == -1)
             {

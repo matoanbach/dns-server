@@ -1,10 +1,19 @@
 # Basic Domain Name System Server
 
-This project is to build a DNS server that's capable of responding to basic DNS queries. This project covers DNS protocol, DNS packet format, DNS record types, UDP servers and more.
+This project is to build a DNS server that's capable of responding to basic DNS queries. This project covers DNS protocol, DNS packet format, DNS record types, UDP servers, DNS resolver and more.
 
 ## How to run
 
-[under construction]
+```sh
+./dns.sh
+```
+Open a new terminal an run:
+
+```sh
+dig @127.0.0.1 -p 2053 +noedns example.com
+```
+
+By default, it just sends back 8.8.8.8 as a response
 
 ## A DNS protocol consists of 5 sections: header, question, answer, authority, and an additional space
 
@@ -179,3 +188,10 @@ while (*current != 0)
     }
 }
 ```
+
+### Forwarding DNS server
+A forwarding DNS server, aka a DNS forwarder, is a DNS server is configured to pass DNS queries it receives from clients to another DNS server for resolution. Instead of directly resolving DNS queries by looking up the information in its own local cache or authoritative records.
+
+However, this feature is still unstable and under testing. In order for it to work properly, you gotta have another DNS server for which our forwarding DNS server sends queries.
+
+<img src="https://github.com/matoanbach/dns-server/pics/dns_resolver.jpeg"/>
