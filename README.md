@@ -91,9 +91,22 @@ For example:
     - <code>com</code> is the content of the label
   - <code>\x00</code> is the null terminator of the domain name
 
-##### Step to decode domain name
-
-[under construction]
+```cpp
+for (int i = 0; i < packet.header.qdcount; ++i)
+{
+    DNSQuestion question;
+    while (*current != 0)
+    {
+        uint8_t len = *current++;
+        question.qname.push_back('.');
+        while (len-- > 0)
+        {
+            question.qname.push_back(*current++);
+        }
+    }
+    // Extract the rest down here
+}
+```
 
 ### Answer section structure
 
@@ -116,25 +129,19 @@ This project will deal with this type of packet as well, where a packet may cont
 
 For example, if a dns server receives:
 
-|                   Header                   |
-| :----------------------------------------: |
-| Question 1 (un-compressed label sequence)  |
-| ------------------------------------------ |
-|   Question 2 (compressed label sequence)   |
-| ------------------------------------------ |
+|                  Header                   |
+| :---------------------------------------: |
+| Question 1 (un-compressed label sequence) |
+|  Question 2 (compressed label sequence)   |
 
 then, it has to send back:
 
-|                   Header                   |
-| :----------------------------------------: |
-| Question 1 (un-compressed label sequence)  |
-| ------------------------------------------ |
-| Question 2 (un-compressed label sequence)  |
-| ------------------------------------------ |
-|  Answer 1 (un-compressed label sequence)   |
-| ------------------------------------------ |
-|  Answer 2 (un-compressed label sequence)   |
-| ------------------------------------------ |
+|                  Header                   |
+| :---------------------------------------: |
+| Question 1 (un-compressed label sequence) |
+| Question 2 (un-compressed label sequence) |
+|  Answer 1 (un-compressed label sequence)  |
+|  Answer 2 (un-compressed label sequence)  |
 
 However, the dns only knows there is a compressed content if it sees a pointer to a prior occurrence of the same name. For example, if the pointer is 0c 10, 10 is decoded as 16 in decimal, which means the pointer is pointing to the 16th position counted from the first byte of the packet.
 
@@ -146,8 +153,9 @@ The first thing we need to determine if we have a compressed content by finding 
 ```cpp
         while (*current != 0)
         {
+            // Check for compression
             if ((*current & 0xC0) == 0xC0)
-            { // Check for compression
+            {
                 /*
                 (*current & 0x3F) << 8: This masks out the first two bits of the current byte
                                         (which are not part of the offset) and shifts the remaining
